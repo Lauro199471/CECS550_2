@@ -72,13 +72,11 @@ class NeuralNetwork:
                 layer.error = output - y
                 # print("layer.error:(δE/δo)\n", layer.error, " ", layer.error.shape)
 
-
                 '''
                 δo/δzo = activation derivative(zo)
                 '''
                 do_dz = layer.apply_activation_derivative(output)
                 # print("do_dz:(δo/δzo)\n", do_dz, " ", do_dz.shape)
-
 
 
                 '''
@@ -87,12 +85,17 @@ class NeuralNetwork:
                 dz_dw = prev_layer.last_activation
                 # print("dz_dw:(δz/δw)\n", dz_dw, " ", dz_dw.shape)
 
-                
                 '''
                 δerror_total/δw(i) = δerror_total/δout(i) * δout(i)/δnet * δnet/δw(i)
                 '''
                 layer.delta = np.dot((layer.error * do_dz).T, dz_dw)
                 # print("layer.delta:(δerror/δw)\n", layer.delta, " ", layer.delta.shape)
+
+                '''
+                δerror_total/δw(i) = δerror_total/δout(i) * δout(i)/δnet * 1
+                '''
+
+                layer.bias = np.dot(layer.error , do_dz)
 
             else:
                 # print("j: ", j)
@@ -100,26 +103,25 @@ class NeuralNetwork:
 
                 next_layer = self._layers[i + 1]
 
-
                 '''
                 δerror_total/δh = δerror_total/δout(i+1) * δout(i+1)/δnet
                 '''
                 de_do = next_layer.error
                 # print("de_do:(δe/δo)\n", de_do, " ", de_do.shape)
-                do_dz = layer.apply_activation_derivative(next_layer.last_activation)
+                do_dz = layer.apply_activation_derivative(
+                    next_layer.last_activation)
                 # print("do_dz:(δo/δz)\n", do_dz, " ", do_dz.shape)
                 dz_dh = next_layer.weights
                 # print("dz_dh:(δz/δh)\n", dz_dh, " ", dz_dh.shape)
                 layer.error = np.dot(de_do * do_dz, dz_dh.T)
                 # print("layer.error: \n", layer.error)
 
-
                 '''
                 δh/δzh = activation derivative(zo)
                 '''
-                dz_dhh = layer.apply_activation_derivative(layer.last_activation)
+                dz_dhh = layer.apply_activation_derivative(
+                    layer.last_activation)
                 # print("dz_dhh:(δz/δh)\n", dz_dhh, " ", dz_dhh.shape)
-
 
                 '''
                 δde/δw = δerror_total/δh * δh/δzh * δzh/δw
@@ -127,7 +129,12 @@ class NeuralNetwork:
                 layer.delta = np.dot((layer.error * dz_dhh).T, layer.input)
                 # print("layer.delta:\n", layer.delta, " ", layer.delta.shape)
 
-        #print("\nupdating...")
+                '''
+                δde/δw = δerror_total/δh * δh/δzh * 1
+                '''
+                layer.bias = np.dot(layer.error , dz_dhh)
+
+        # print("\nupdating...")
         # Update the weights
         for i in range(len(self._layers)):
             layer = self._layers[i]
