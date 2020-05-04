@@ -124,14 +124,13 @@ class NeuralNetwork:
                 '''
                 δde/δw = δerror_total/δh * δh/δzh * δzh/δw
                 '''
-                err_act = layer.error * dz_dhh 
-                layer.delta = np.dot((err_act).T, layer.input)
+                layer.delta = np.dot(( layer.error * dz_dhh).T, layer.input)
                 # print("layer.delta:\n", layer.delta, " ", layer.delta.shape)
 
                 '''
                 δde/δb = δerror_total/δh * δh/δzh * 1
                 '''
-                layer.bias_delta = err_act
+                layer.bias_delta = layer.error * dz_dhh
 
         # print("\nupdating...")
         # Update the weights
