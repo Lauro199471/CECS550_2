@@ -96,7 +96,7 @@ class NeuralNetwork:
                 layer.bias_delta = layer.error * do_dz
 
             else:
-                print("j: ", j)
+                # print("j: ", j)
                 j += 1
 
                 next_layer = self._layers[i + 1]
@@ -105,28 +105,28 @@ class NeuralNetwork:
                 δerror_total/δh = δerror_total/δout(i+1) * δout(i+1)/δnet
                 '''
                 de_do = next_layer.error
-                print("de_do:(δe/δo)\n", de_do, " ", de_do.shape)
+                # print("de_do:(δe/δo)\n", de_do, " ", de_do.shape)
                 do_dz = layer.apply_activation_derivative(
                     next_layer.last_activation)
-                print("do_dz:(δo/δz)\n", do_dz, " ", do_dz.shape)
+                # print("do_dz:(δo/δz)\n", do_dz, " ", do_dz.shape)
                 dz_dh = next_layer.weights
-                print("dz_dh:(δz/δh)\n", dz_dh, " ", dz_dh.shape)
+                # print("dz_dh:(δz/δh)\n", dz_dh, " ", dz_dh.shape)
                 layer.error = np.dot(de_do * do_dz, dz_dh.T)
-                print("layer.error: \n", layer.error, " ", layer.error.shape)
+                # print("layer.error: \n", layer.error, " ", layer.error.shape)
 
                 '''
                 δh/δzh = activation derivative(zo)
                 '''
                 dz_dhh = layer.apply_activation_derivative(
                     layer.last_activation)
-                print("dz_dhh:(δz/δh)\n", dz_dhh, " ", dz_dhh.shape)
+                # print("dz_dhh:(δz/δh)\n", dz_dhh, " ", dz_dhh.shape)
 
                 '''
                 δde/δw = δerror_total/δh * δh/δzh * δzh/δw
                 '''
                 err_act = layer.error * dz_dhh 
                 layer.delta = np.dot((err_act).T, layer.input)
-                print("layer.delta:\n", layer.delta, " ", layer.delta.shape)
+                # print("layer.delta:\n", layer.delta, " ", layer.delta.shape)
 
                 '''
                 δde/δb = δerror_total/δh * δh/δzh * 1
@@ -138,17 +138,17 @@ class NeuralNetwork:
         for i in range(len(self._layers)):
             layer = self._layers[i]
             deltas = np.reshape(layer.delta, (1, -1))
-            print("deltas: \n", deltas)
+            # print("deltas: \n", deltas)
             weights = np.reshape(layer.weights, (1, -1))
-            print("weights: \n", weights)
+            # print("weights: \n", weights)
             layer.updateweights(weights - (learning_rate * deltas))
-            print("weights: \n", layer.weights)
+            # print("weights: \n", layer.weights)
 
             bias = np.reshape(layer.bias, (1, -1))
             layer.bias = bias - learning_rate * layer.bias_delta
-            print("biases: \n", layer.bias)
+            # print("biases: \n", layer.bias)
 
-            print("\n\n")
+            # print("\n\n")
 
     def train(self, X, y, learning_rate, max_epochs):
         """
