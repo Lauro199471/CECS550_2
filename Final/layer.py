@@ -25,6 +25,7 @@ class Layer:
         self.error = None
         self.delta = None
         self.input = None
+        self.bias_delta = 0
 
     def updateweights(self, w):
         self.weights = np.reshape(w, (self.n_input, self.n_neurons))
